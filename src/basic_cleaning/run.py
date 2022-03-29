@@ -29,8 +29,13 @@ def go(args):
     artifact_local_path = run.use_artifact(args.input_artifact).file()
     sample = pd.read_csv(artifact_local_path)
 
-    logger.info(f"Cleaning data")
+    logger.info(f"Cleaning data using price column")
     clean_sample = sample[sample["price"].between(args.min_price, args.max_price)]
+    
+    logger.info("Cleaning data using lat and long columns") 
+    
+    idx = clean_sample['longitude'].between(-74.25, -73.50) & clean_sample['latitude'].between(40.5, 41.2)
+    clean_sample = clean_sample[idx].copy()
 
     logger.info(f"Save cleaning data in {args.output_artifact}")
     clean_sample.to_csv(args.output_artifact, index=False)
